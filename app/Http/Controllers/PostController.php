@@ -18,7 +18,7 @@ class PostController extends Controller
     {
         // Retorna um post específico pelo ID
         $post = Post::find($id);
-        
+
         if (!$post) {
             return response()->json(['error' => 'Post não encontrado'], 404);
         }
@@ -57,41 +57,43 @@ class PostController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validação dos campos
+        // Validação dos campos (podendo ser vazios)
         $request->validate([
-            'author' => 'required|string',
-            'category' => 'required|in:Post,Artigo,Grupo',
-            'content' => 'required|string',
-            'images.*' => 'image|mimes:jpg,png',
+            'author' => 'sometimes|string',
+            'category' => 'sometimes|in:Post,Artigo,Grupo',
+            'content' => 'sometimes|string',
+            'images.*' => 'sometimes|image|mimes:jpg,png',
         ]);
-    
+
         // Encontrar o post pelo ID
         $post = Post::findOrFail($id);
-    
-        // Atualizar os campos do post
-        $post->author = $request->author;
-        $post->category = $request->category;
-        $post->content = $request->content;
-        $post->save();
-    
+
+        // Atualizar os campos do post apenas se estiverem presentes na requisição
+        $post->fill($request->only(['author', 'category', 'content']));
+
         // Lógica para atualizar imagens, se necessário
-    
+        if ($request->hasFile('images')) {
+            // Lógica para processar as imagens
+        }
+
+        // Salvar as alterações
+        $post->save();
+
         // Retornar resposta JSON
         return response()->json(['message' => 'Post atualizado com sucesso']);
     }
-    
     public function destroy($id)
     {
         // Encontrar o post pelo ID
         $post = Post::findOrFail($id);
-    
+
         // Lógica para deletar imagens associadas ao post, se necessário
-    
+
         // Deletar o post
         $post->delete();
-    
+
         // Retornar resposta JSON
         return response()->json(['message' => 'Post deletado com sucesso']);
     }
-    
+
 }
