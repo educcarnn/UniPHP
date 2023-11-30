@@ -15,7 +15,7 @@ use App\Http\Controllers\PostController;
     Route::post('/', [PostController::class, 'store']);
 
     // Rota para atualizar um post existente
-    Route::put('/{id}', [PostController::class, 'update']);
+    Route::patch('/{id}', [PostController::class, 'update']);
 
     // Rota para deletar um post
     Route::delete('/{id}', [PostController::class, 'destroy']);

@@ -57,11 +57,41 @@ class PostController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Lógica para atualizar um post existente
+        // Validação dos campos
+        $request->validate([
+            'author' => 'required|string',
+            'category' => 'required|in:Post,Artigo,Grupo',
+            'content' => 'required|string',
+            'images.*' => 'image|mimes:jpg,png',
+        ]);
+    
+        // Encontrar o post pelo ID
+        $post = Post::findOrFail($id);
+    
+        // Atualizar os campos do post
+        $post->author = $request->author;
+        $post->category = $request->category;
+        $post->content = $request->content;
+        $post->save();
+    
+        // Lógica para atualizar imagens, se necessário
+    
+        // Retornar resposta JSON
+        return response()->json(['message' => 'Post atualizado com sucesso']);
     }
-
+    
     public function destroy($id)
     {
-        // Lógica para deletar um post
+        // Encontrar o post pelo ID
+        $post = Post::findOrFail($id);
+    
+        // Lógica para deletar imagens associadas ao post, se necessário
+    
+        // Deletar o post
+        $post->delete();
+    
+        // Retornar resposta JSON
+        return response()->json(['message' => 'Post deletado com sucesso']);
     }
+    
 }
