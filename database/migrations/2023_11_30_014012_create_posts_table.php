@@ -6,24 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
-            $table->string('author'); // Adicionado campo para o autor do post
-            $table->enum('category', ['Post', 'Artigo', 'Grupo']); // Adicionado campo para a categoria
-            $table->text('content'); // Adicionado campo para o conteúdo do post
+            $table->string('author');
+            $table->enum('category', ['Post', 'Artigo', 'Grupo']);
+            $table->text('content');
+            $table->string('image')->default('images/default.jpg'); // Defina um valor padrão ou o caminho de uma imagem padrão
             $table->timestamps();
         });
     }
 
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('posts');
