@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Post;
-use Illuminate\Support\Facades\Storage; //php artisan storage:link = php artisan storage:link = http://127.0.0.1:8000/storage/1.jpg
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\ProductStoreRequest;
+
 class PostController extends Controller
 {
     public function index()
@@ -15,25 +17,31 @@ class PostController extends Controller
         return response()->json($posts);
     }
 
-
     public function store(Request $request)
     {
-        $post = new Post();
-        $post->author = $request->author;
-        $post->category = $request->category;
-        $post->content = $request->content;
-
-        if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/images', $imageName); // Salvar no diretório 'public/images'
-            $post->image = $imageName; // Atualizado para o nome do arquivo
+        try {
+            $post = new Post();
+            $post->author = $request->author;
+            $post->category = $request->category;
+            $post->content = $request->content;
+    
+            if ($request->hasFile('image')) {
+                $imageName = Str::random(32) . '.' . $request->image->getClientOriginalExtension();
+    
+                // Salvar a imagem diretamente em storage/images
+                Storage::disk('public')->put('images/' . $imageName, file_get_contents($request->image));
+    
+                // Atualize para usar o caminho completo do arquivo
+                $post->image = 'images/' . $imageName;
+            }
+    
+            $post->save();
+    
+            return response()->json(['message' => 'Post criado com sucesso']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Algo deu muito errado!'], 500);
         }
-
-        $post->save();
-
-        return response()->json(['message' => 'Post criado com sucesso']);
     }
-
     public function update(Request $request, $id)
     {
         // Validação dos campos (podendo ser vazios)

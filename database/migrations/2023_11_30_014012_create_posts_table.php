@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('author');
             $table->enum('category', ['Post', 'Artigo', 'Grupo']);
             $table->text('content');
-            $table->string('image')->default('images/default.jpg'); // Defina um valor padrão ou o caminho de uma imagem padrão
+            $table->string('image')->default('images/default.jpg'); 
             $table->timestamps();
         });
     }
